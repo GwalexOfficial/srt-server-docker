@@ -2,7 +2,7 @@ FROM debian:stable-slim
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y build-essential libssl-dev wget git bash unattended-upgrades && \
+    apt-get install -y build-essential tclsh pkg-config cmake libssl-dev libpcre3 libpcre3-dev wget git zlib1g-dev bash unattended-upgrades && \
     apt-get autoremove -y && \
     apt-get autoclean && \
     apt-get clean
