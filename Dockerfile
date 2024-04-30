@@ -2,7 +2,7 @@ FROM debian:stable-slim
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y build-essential libpcre3 libpcre3-dev libssl-dev wget git zlib1g-dev bash unattended-upgrades && \
+    apt-get install -y build-essential tclsh pkg-config cmake libssl-dev libpcre3 libpcre3-dev wget git zlib1g-dev bash unattended-upgrades && \
     apt-get autoremove -y
 
 RUN git clone https://github.com/Haivision/srt.git \
@@ -24,6 +24,6 @@ RUN wget -O sls.conf https://raw.githubusercontent.com/GwalexOfficial/srt-server
 RUN echo 'APT::Periodic::Update-Package-Lists "1";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
     echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
     echo 'APT::Periodic::AutocleanInterval "7";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
-    echo 'Unattended-Upgrade::Remove-Unused-Dependencies "true";' >> /etc/apt/apt.conf.d/50unattended-upgrades 
+    echo 'Unattended-Upgrade::Remove-Unused-Dependencies "true";' >> /etc/apt/apt.conf.d/50unattended-upgrades
 	
 CMD unattended-upgrades & /srt-live-server/bin/sls -c /srt-live-server/bin/sls.conf -g "daemon off;"
