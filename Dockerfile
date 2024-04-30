@@ -2,35 +2,28 @@ FROM debian:stable-slim
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y build-essential tclsh pkg-config cmake libssl-dev libpcre3 libpcre3-dev wget git zlib1g-dev bash unattended-upgrades && \
-    apt-get autoremove -y && \
-    apt-get autoclean && \
-    apt-get clean
+    apt-get install -y build-essential libpcre3 libpcre3-dev libssl-dev wget git zlib1g-dev bash unattended-upgrades && \
+    apt-get autoremove -y
 
-RUN cd /usr/local/bin \
-    && git clone https://github.com/Haivision/srt.git \
+RUN git clone https://github.com/Haivision/srt.git \
     && cd srt \
-    && ./configure \
-    && make \
-    && make install
+	&& ./configure \
+	&& make \
+	&& make install \
+	&& cd
 
-RUN cd /usr/local/bin \
-    && git clone https://gitlab.com/mattwb65/srt-live-server.git \
-    && cd srt-live-server \
-    && make -j8 \
-    && mv sls.conf sls.bak \
-    && wget -O /srt-live-server/sls.conf https://raw.githubusercontent.com/GwalexOfficial/srt-server-docker/main/sls/conf/sls.conf \
-    && cd bin \
-    && ldconfig
+RUN git clone https://gitlab.com/mattwb65/srt-live-server.git \
+	&& cd srt-live-server/ \
+	&& make -j8 \
+	&& rm sls.conf
 
-EXPOSE 8181
-EXPOSE 8282
+RUN wget -O sls.conf https://raw.githubusercontent.com/GwalexOfficial/srt-server-docker/main/sls/conf/sls.conf \
+	&& cd bin \
+	&& ldconfig 
 
 RUN echo 'APT::Periodic::Update-Package-Lists "1";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
     echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
-	echo 'APT::Periodic::AutocleanInterval "7";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
-    echo 'Unattended-Upgrade::Remove-Unused-Dependencies "true";' >> /etc/apt/apt.conf.d/50unattended-upgrades && \
-    echo 'Unattended-Upgrade::Automatic-Reboot "true";' >> /etc/apt/apt.conf.d/50unattended-upgrades && \
-    echo 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";' >> /etc/apt/apt.conf.d/50unattended-upgrades
-
-CMD unattended-upgrades & /usr/local/bin/srt-live-server/bin ./sls -c ../sls.conf
+    echo 'APT::Periodic::AutocleanInterval "7";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
+    echo 'Unattended-Upgrade::Remove-Unused-Dependencies "true";' >> /etc/apt/apt.conf.d/50unattended-upgrades && 
+	
+CMD unattended-upgrades & /srt-live-server/bin/sls -c /srt-live-server/bin/sls.conf -g "daemon off;"
