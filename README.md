@@ -7,7 +7,7 @@ For arm64 systems: docker run -d --name srt-server --restart unless-stopped -p 8
 
 ## Build Docker Image self:
 
-wget Dockerfile
+wget https://raw.githubusercontent.com/GwalexOfficial/srt-server-docker/main/Dockerfile
 
 Build Image: docker build --no-cache -t srt-server .
 
