@@ -2,7 +2,7 @@ FROM alpine:latest
 
 RUN apk update && \
     apk upgrade && \
-    apk add --no-cache libinput-dev wget make cmake tcl openssl-dev zlib-dev gcc perl git unzip tcl bash pkgconfig libssl1.1 build-base
+    apk add --no-cache libinput-dev wget make cmake tcl openssl-dev zlib-dev gcc perl git unzip tcl bash pkgconfig libressl3 build-base
 
 RUN git clone https://github.com/Haivision/srt.git \
     && cd srt \
