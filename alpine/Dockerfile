@@ -2,7 +2,7 @@ FROM alpine:latest
 
 RUN apk update && \
     apk upgrade && \
-    apk add --no-cache libinput-dev wget git make cmake tcl openssl-dev zlib-dev gcc perl tcl bash pkgconfig build-base linux-headers && \
+    apk add --no-cache libinput-dev wget make cmake tcl openssl-dev zlib-dev gcc perl unzip tcl bash pkgconfig build-base linux-headers && \
     git clone https://github.com/Haivision/srt.git && \
     cd srt && \
     cmake . && \
@@ -16,8 +16,8 @@ RUN apk update && \
     sed -i 's/conf_srt->http_port != NULL/conf_srt->http_port != 0/g' srt-live-server.cpp && \
     make -j8 && \
     cd .. && \
-    rm -rf srt srt-live-server /var/cache/apk/* && \
-    apk del build-base wget git make cmake
+    apk del build-base wget git make cmake && \
+    rm -rf /var/cache/apk/*
 
 RUN wget -O /srt-live-server/sls.conf https://raw.githubusercontent.com/GwalexOfficial/srt-server-docker/main/sls/conf/sls.conf
 
