@@ -1,38 +1,26 @@
-FROM debian:stable-slim
+FROM alpine:latest
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y libinput-dev wget make cmake tcl openssl zlib1g-dev gcc perl git unzip tclsh pkg-config libssl-dev build-essential bash unattended-upgrades && \
-    apt-get autoremove -y
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache libinput-dev wget git make cmake tcl openssl-dev zlib-dev gcc perl tcl bash pkgconfig build-base linux-headers && \
+    git clone https://github.com/Haivision/srt.git && \
+    cd srt && \
+    cmake . && \
+    make && \
+    make install && \
+    cd .. && \
+    git clone https://gitlab.com/mattwb65/srt-live-server.git && \
+    cd srt-live-server/ && \
+    echo "#include <ctime>" | cat - slscore/common.cpp > /tmp/out && \
+    mv /tmp/out slscore/common.cpp && \
+    sed -i 's/conf_srt->http_port != NULL/conf_srt->http_port != 0/g' srt-live-server.cpp && \
+    make -j8 && \
+    cd .. && \
+    apk del build-base wget git make cmake && \
+    rm -rf /var/cache/apk/*
 
-RUN git clone https://github.com/Haivision/srt.git \
-    && cd srt \
-    && ./configure \
-    && make \
-    && make install \
-    && cd
+RUN wget -O /srt-live-server/sls.conf https://raw.githubusercontent.com/GwalexOfficial/srt-server-docker/main/sls/conf/sls.conf
 
-RUN git clone https://gitlab.com/mattwb65/srt-live-server.git \
-    && cd srt-live-server/ \
-    && echo "#include <ctime>"|cat - slscore/common.cpp > /tmp/out && mv /tmp/out slscore/common.cpp \
-    && make -j8 \
-    && rm sls.conf
+WORKDIR /srt-live-server/bin
 
-RUN wget -O /srt-live-server/sls.conf https://raw.githubusercontent.com/GwalexOfficial/srt-server-docker/main/sls/conf/sls.conf \
-    && cd bin \
-    && ldconfig
-
-RUN echo 'APT::Periodic::Update-Package-Lists "1";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
-    echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
-    echo 'APT::Periodic::AutocleanInterval "7";' >> /etc/apt/apt.conf.d/20auto-upgrades && \
-    echo 'Unattended-Upgrade::Remove-Unused-Dependencies "true";' >> /etc/apt/apt.conf.d/50unattended-upgrades
-
-# Kopiere das Start-Skript in den Container
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-# Wechsle ins Arbeitsverzeichnis
-WORKDIR /srt-live-server/bin/
-
-# Führe das Start-Skript aus
-CMD ["/start.sh"]
+CMD ["/bin/sh", "-c", "/srt-live-server/bin/sls -c /srt-live-server/sls.conf"]
