@@ -21,9 +21,6 @@ RUN wget -O /srt-live-server/sls.conf https://raw.githubusercontent.com/GwalexOf
     && cd srt-live-server/bin \
     && ldconfig
 
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
 WORKDIR /srt-live-server/bin/
 
-CMD ["/start.sh"]
+CMD ["/bin/sh", "-c", "/srt-live-server/bin/sls -c /srt-live-server/sls.conf"]
