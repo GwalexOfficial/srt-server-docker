@@ -3,7 +3,7 @@ FROM alpine:3.21.0 AS builder
 RUN apk update && apk upgrade && \
     apk add --no-cache libinput-dev wget git make cmake tcl openssl-dev zlib-dev gcc perl tcl bash pkgconfig build-base linux-headers
 
-RUN git clone https://github.com/Haivision/srt.git && \
+RUN git clone --branch v1.5.4 --single-branch https://github.com/Haivision/srt.git && \
     cd srt && \
     cmake . && \
     make && \
