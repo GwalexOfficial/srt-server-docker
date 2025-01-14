@@ -1,4 +1,4 @@
-FROM alpine:3.21.0 AS builder
+FROM alpine:3.21.2 AS builder
 
 RUN apk update && apk upgrade && \
     apk add --no-cache libinput-dev wget git make cmake tcl openssl-dev zlib-dev gcc perl tcl bash pkgconfig build-base linux-headers
@@ -16,7 +16,7 @@ RUN git clone https://gitlab.com/mattwb65/srt-live-server.git && \
     sed -i 's/conf_srt->http_port != NULL/conf_srt->http_port != 0/g' srt-live-server.cpp && \
     make -j8
 
-FROM alpine:3.21.0
+FROM alpine:3.21.2
 
 RUN apk update && apk upgrade && \
     apk add --no-cache libinput-dev tcl openssl-dev zlib-dev bash libstdc++ libc6-compat
